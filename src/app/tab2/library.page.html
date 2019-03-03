@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+      Library
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <section *ngIf="normalSongs.length > 0 || instrumentalSongs.length > 0 || backgroundVocalsSongs.length > 0 || otherSongs.length > 0">
+      <ion-item-divider>
+        <ion-label>
+          Downloaded Songs
+        </ion-label>
+      </ion-item-divider>
+      <ion-radio-group [(ngModel)]="selectedSong">
+        <ion-item *ngFor="let song of normalSongs; let index = index" (click)="selectSong(normalSongs, index)">
+          <ion-label>{{ song.title }}</ion-label>
+          <ion-radio slot="start" [value]="song"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+      <!-- Instrumental Songs -->
+      <ion-item-divider *ngIf="instrumentalSongs.length > 0">
+        <ion-label>
+          Instrumental
+        </ion-label>
+      </ion-item-divider>
+      <!-- <div class="subheader" *ngIf="instrumentalSongs.length > 0">Instrumental</div> -->
+      <ion-radio-group [(ngModel)]="selectedSong">
+        <ion-item *ngFor="let song of instrumentalSongs; let index = index" (click)="selectSong(instrumentalSongs, index)">
+          <ion-label>{{ song.title }}</ion-label>
+          <ion-radio slot="start" [value]="song"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+      <!-- Instrumental with Background Vocals -->
+      <ion-item-divider *ngIf="backgroundVocalsSongs.length > 0">
+        <ion-label>
+          Instrumental with Background Vocals
+        </ion-label>
+      </ion-item-divider>
+      <div class="subheader" *ngIf="backgroundVocalsSongs.length > 0">Instrumental with Background Vocals</div>
+      <ion-radio-group [(ngModel)]="backgroundVocalsSongs">
+        <ion-item *ngFor="let song of backgroundVocalsSongs; let index = index" (click)="selectSong(backgroundVocalsSongs, index)">
+          <ion-label>{{ song.title }}</ion-label>
+          <ion-radio slot="start" [value]="song"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+      <!-- Other -->
+      <ion-item-divider *ngIf="otherSongs.length > 0">
+        <ion-label>
+          Other
+        </ion-label>
+      </ion-item-divider>
+      <div class="subheader" *ngIf="otherSongs.length > 0">Other</div>
+      <ion-radio-group [(ngModel)]="selectedSong">
+        <ion-item *ngFor="let song of otherSongs; let index = index" (click)="selectSong(otherSongs, index)">
+          <ion-label>{{ song.title }}</ion-label>
+          <ion-radio slot="start" [value]="song"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </section>
+    <section *ngIf="songsToDownload.length > 0">
+      <ion-item-divider>
+        <ion-label>
+          Available to Download
+        </ion-label>
+      </ion-item-divider>
+      <ion-item *ngFor="let song of songsToDownload; let index = index" (click)="downloadSong(song, index)">
+        <ion-label>{{ song.title }}</ion-label>
+      </ion-item>
+    </section>
+  </ion-list>
+</ion-content>

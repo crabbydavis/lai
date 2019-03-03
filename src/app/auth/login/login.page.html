@@ -1,0 +1,16 @@
+<ion-content>
+  <div id="img-background">
+    <img id="logo" src="/assets/logos/ShortDashboardLogo.png">
+  </div>
+  <div id="form-fields">
+    <ion-item>
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="email" [(ngModel)]="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" [(ngModel)]="password"></ion-input>
+    </ion-item>
+  </div>
+  <ion-button color="secondary" class="std-button" (click)="login()" [disabled]="!email || !password">Login</ion-button>
+</ion-content>

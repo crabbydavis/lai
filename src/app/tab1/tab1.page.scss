@@ -1,4 +1,25 @@
-.welcome-card ion-img {
-  max-height: 35vh;
-  overflow: hidden;
+#logo {
+  // position: absolute;
+  // top: 0px;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.section-title {
+  text-align: center;
+  font-weight: 600;
+  // text-decoration: underline;
+}
+.highlight {
+  font-weight: 700;
+}
+#body {
+  div {
+    margin: 10px;
+  }
+}
+#signature {
+  height: 50px;
+  position: absolute;
+  left: 30px;
 }

@@ -1,5 +1,7 @@
 {
   "name": "lai",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

@@ -1,0 +1,33 @@
+#img-background {
+    height: 250px;
+    position: relative;
+    background-image: url('/assets/pics/DashboardPic-min.JPG');
+    background-repeat:no-repeat;
+    background-size:cover;
+    #logo {
+        position: absolute;
+        bottom: 0px;
+        width: 90%;
+        margin-left: 5%;
+        opacity: 1;
+        z-index: 2;
+    }
+}
+#img-background:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.3);
+}
+#form-fields {
+    margin-top: calc(10px);
+    margin-bottom: 50px;
+}
+.std-button {
+    width: 80%;
+    margin-left: 10%;
+    font-weight: 800;
+}

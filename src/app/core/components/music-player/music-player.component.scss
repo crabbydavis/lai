@@ -1,0 +1,34 @@
+.top {
+    height: 70px;
+    .close-icon {
+        position: absolute;
+        right: 15px;
+        top: 30px;
+        font-size: 25px;
+        font-weight: 300;
+    }
+}
+.song-img {
+    width: 300px;
+    margin-left: calc(50% - 150px);
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+.music-controls {
+    position: absolute;
+    bottom: 10%;
+    width: 100%;
+    text-align: center;
+    ion-icon {
+        font-size: 30px;
+    }
+    .main-buttons {
+        ion-icon {
+            position: relative;
+            top: -5px;
+            font-size: 40px;
+        }
+    }
+}

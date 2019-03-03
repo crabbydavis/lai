@@ -1,0 +1,23 @@
+
+<section>
+    <div class="top">
+        <ion-icon class="close-icon" name="close-circle-outline" tappable (click)="dismiss()"></ion-icon>
+      </div>
+  <div class="song-img">
+    <img [src]="songs[activeIndex].imageUrl">
+  </div>
+  <ion-grid>
+    <ion-row class="music-controls" justify-content-center>
+      <ion-col>
+        <ion-icon name="rewind" tappable (click)="rewind()"></ion-icon>
+      </ion-col>
+      <ion-col class="main-buttons">
+        <ion-icon *ngIf="!songPlaying" name="play" tappable (click)="playSong()"></ion-icon>
+        <ion-icon *ngIf="songPlaying" name="pause" tappable (click)="pauseSong()"></ion-icon>
+      </ion-col>
+      <ion-col>
+        <ion-icon name="fastforward" tappable (click)="fastForward()"></ion-icon>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</section>

@@ -1,9 +1,28 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-title>
-      Tab Three
+      Settings
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <ion-list>
+    <ion-item lines="full">
+      <ion-label slot="start">Name:</ion-label>
+      <ion-label slot="end">{{ auth.user.name }}</ion-label>
+    </ion-item>
+    <ion-item lines="full">
+      <ion-label slot="start">Email:</ion-label>
+      <ion-label slot="end">{{ auth.user.email }}</ion-label>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label slot="start">Subscription:</ion-label>
+      <ion-label slot="end" [ngSwitch]="auth.user.subscriptionType">
+        <span *ngSwitchCase="SubscriptionType.Monthly">Monthly</span>
+        <span *ngSwitchCase="SubscriptionType.Annual">Annual</span>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-button id="logout-button" color="secondary" (click)="logout()">Logout</ion-button>
+</ion-content>
