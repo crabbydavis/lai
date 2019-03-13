@@ -1,3 +1,4 @@
+import { HelperService } from './../core/services/helper.service';
 import { SubscriptionType } from './../core/models/user.model';
 import { AuthService } from './../core/services/auth.service';
 import { Component } from '@angular/core';
@@ -14,6 +15,7 @@ export class Tab3Page {
 
   constructor(
     public auth: AuthService,
+    public helper: HelperService,
     private router: Router
   ) {
   }

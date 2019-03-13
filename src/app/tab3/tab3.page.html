@@ -9,20 +9,24 @@
 <ion-content>
   <ion-list>
     <ion-item lines="full">
-      <ion-label slot="start">Name:</ion-label>
-      <ion-label slot="end">{{ auth.user.name }}</ion-label>
+      <div slot="start">Name:</div>
+      <div slot="end">{{ auth.user.firstName }} {{ auth.user.lastName }}</div>
     </ion-item>
     <ion-item lines="full">
-      <ion-label slot="start">Email:</ion-label>
-      <ion-label slot="end">{{ auth.user.email }}</ion-label>
+      <div slot="start">Email:</div>
+      <div slot="end">{{ auth.user.email }}</div>
     </ion-item>
     <ion-item lines="none">
-      <ion-label slot="start">Subscription:</ion-label>
-      <ion-label slot="end" [ngSwitch]="auth.user.subscriptionType">
-        <span *ngSwitchCase="SubscriptionType.Monthly">Monthly</span>
-        <span *ngSwitchCase="SubscriptionType.Annual">Annual</span>
-      </ion-label>
+      <div slot="start">Subscription:</div>
+      <div slot="end" [ngSwitch]="auth.user.planType">
+        <span *ngSwitchCase="'subscription'">Monthly</span>
+        <span *ngSwitchCase="'charge'">Annual</span>
+      </div>
     </ion-item>
   </ion-list>
   <ion-button id="logout-button" color="secondary" (click)="logout()">Logout</ion-button>
+  <div id="site-link">
+    Download toolkits and manage your account at
+    <ion-button color="primary" fill="clear" (click)="helper.openURL()">www.liveallintoday.com</ion-button>
+  </div>
 </ion-content>

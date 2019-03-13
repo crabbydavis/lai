@@ -1,0 +1,35 @@
+<ion-header>
+    <ion-toolbar color="primary">
+      <ion-title>Register</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="closeModal()">
+          <ion-icon slot="icon-only" name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content>
+    <div id="explanation">You are creating a password specifically for the Live All In app, it can be the same or different than the password you use for liveallintoday.com. You only have to do this one time</div>
+    <div id="form-fields">
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" [(ngModel)]="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input type="password" [(ngModel)]="password"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Confirm Password</ion-label>
+        <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
+      </ion-item>
+    </div>
+    <ion-button color="secondary" class="std-button" (click)="register()" [disabled]="disableRegister()">Register</ion-button>
+    <div id="not-found" *ngIf="accountNotFound">
+    <!-- <div id="not-found"> -->
+      Account not found, please sign up at
+      <ion-button color="primary" fill="clear" (click)="signUp()">www.liveallintoday.com</ion-button>
+    </div>
+  </ion-content>
+  

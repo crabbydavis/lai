@@ -39,7 +39,6 @@
           Instrumental with Background Vocals
         </ion-label>
       </ion-item-divider>
-      <div class="subheader" *ngIf="backgroundVocalsSongs.length > 0">Instrumental with Background Vocals</div>
       <ion-radio-group [(ngModel)]="backgroundVocalsSongs">
         <ion-item *ngFor="let song of backgroundVocalsSongs; let index = index" (click)="selectSong(backgroundVocalsSongs, index)">
           <ion-label>{{ song.title }}</ion-label>
@@ -52,7 +51,6 @@
           Other
         </ion-label>
       </ion-item-divider>
-      <div class="subheader" *ngIf="otherSongs.length > 0">Other</div>
       <ion-radio-group [(ngModel)]="selectedSong">
         <ion-item *ngFor="let song of otherSongs; let index = index" (click)="selectSong(otherSongs, index)">
           <ion-label>{{ song.title }}</ion-label>
@@ -68,6 +66,7 @@
       </ion-item-divider>
       <ion-item *ngFor="let song of songsToDownload; let index = index" (click)="downloadSong(song, index)">
         <ion-label>{{ song.title }}</ion-label>
+        <div class="get">Get</div>
       </ion-item>
     </section>
   </ion-list>

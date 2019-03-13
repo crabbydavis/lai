@@ -1,7 +1,7 @@
 import { Song } from './../../models/song.model';
 import { AuthService } from '../../services/auth.service';
 import { SongService } from '../../services/song.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectorRef } from '@angular/core';
 import { Media, MediaObject } from '@ionic-native/media/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { Platform, ModalController } from '@ionic/angular';
@@ -15,8 +15,10 @@ export class MusicPlayerComponent implements OnInit {
   @Input() songs: Song[];
   @Input() activeIndex: number;
 
+  activeSong: Song;
   songPlaying = false;
   songUrl: any;
+  inDismiss = false;
   private musicPlayer: MediaObject;
   private readonly skipLength = 30000;
   private readonly msInSec = 1000;
@@ -24,6 +26,7 @@ export class MusicPlayerComponent implements OnInit {
   constructor(
     private auth: AuthService,
     private file: File,
+    private cdr: ChangeDetectorRef,
     private media: Media,
     private modalCtrl: ModalController,
     private platform: Platform,
@@ -31,10 +34,12 @@ export class MusicPlayerComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.activeSong = this.songs[this.activeIndex];
   }
 
   dismiss(): void {
     console.log('trying to dismiss modal');
+    this.inDismiss = true;
     if (this.musicPlayer) {
       this.pauseSong();
       this.musicPlayer.stop();
@@ -68,36 +73,6 @@ export class MusicPlayerComponent implements OnInit {
     console.log('pause song');
   }
 
-  // playDownloadedSong(): void {
-  //   // this.file.getFile(this.file.dataDirectory, 'song.mp3', {}).then(res => {
-
-  //   // });
-  //   // const file: MediaObject = this.media.create()
-  //   console.log('in playDownloadedSong');
-  //   this.songPlaying = true;
-  //   // this.nativeStorage.getItem('song').then(res => {
-  //     // console.log('got Song!' + res);
-  //     // this.songUrl = URL.createObjectURL(this.songService.song);
-
-  //     // const url = this.file.dataDirectory + '/song.mp3';
-  //     let mediaUrl = this.songService.activeSong.audioPath;
-  //     if (this.platform.is('ios')) {
-  //       mediaUrl = '../Library/NoCloud/' + mediaUrl.split('/').pop();
-  //     }
-  //     console.log(mediaUrl);
-  //     this.musicPlayer = this.media.create(mediaUrl);
-
-  //     this.musicPlayer.onStatusUpdate.subscribe(status => console.log(status)); // fires when file status changes
-
-  //     this.musicPlayer.onSuccess.subscribe(() => console.log('Action is successful'));
-
-  //     this.musicPlayer.onError.subscribe(error => console.log('Error!', error));
-
-  //     this.musicPlayer.play();
-  //     console.log('tried playing song');
-  //   // });
-  // }
-
   playSong(nextSong?: boolean): void {
     console.log('in playDownloadedSong');
     this.songPlaying = true;
@@ -106,7 +81,7 @@ export class MusicPlayerComponent implements OnInit {
       this.musicPlayer.play({ playAudioWhenScreenIsLocked : true });  // param specified for ios
     } else {
 
-      let mediaUrl = this.songs[this.activeIndex].audioPath; // this.song.audioPath;
+      let mediaUrl = this.activeSong.audioPath;
       if (this.platform.is('ios')) {
         mediaUrl = '../Library/NoCloud/' + mediaUrl.split('/').pop();
       }
@@ -118,11 +93,19 @@ export class MusicPlayerComponent implements OnInit {
       this.musicPlayer.onSuccess.subscribe(() => {
         console.log('Action is successful');
         console.log('song finished');
-        this.activeIndex += 1;
-        if (this.activeIndex >= this.songs.length) {
-          this.activeIndex = 0;
+        // this.musicPlayer.stop();
+        // this.musicPlayer.release();
+        if (!this.inDismiss) {
+          this.activeIndex += 1;
+          if (this.activeIndex >= this.songs.length) {
+            this.activeIndex = 0;
+          }
+          this.activeSong = this.songs[this.activeIndex];
+          this.cdr.detectChanges();
+          console.log(this.activeIndex);
+          console.log(this.activeSong);
+          this.playSong(true);
         }
-        this.playSong(true);
       });
 
       this.musicPlayer.onError.subscribe(error => console.log('Error!', error));

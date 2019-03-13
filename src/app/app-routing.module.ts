@@ -4,7 +4,7 @@ import { RouteGuardService } from './core/services/app-route-guard.service';
 
 const routes: Routes = [
   { path: '', canActivate: [RouteGuardService], loadChildren: './tabs/tabs.module#TabsPageModule' },
-  { path: 'login', loadChildren: './auth/login/login.module#LoginPageModule' }
+  { path: 'login', loadChildren: './auth/login/login.module#LoginPageModule' },
 ];
 @NgModule({
   imports: [

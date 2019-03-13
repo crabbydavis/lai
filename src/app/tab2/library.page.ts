@@ -1,3 +1,4 @@
+import { AuthService } from './../core/services/auth.service';
 import { SongType } from './../core/models/song.model';
 import { HelperService } from './../core/services/helper.service';
 import { Component, OnInit } from '@angular/core';
@@ -25,6 +26,7 @@ export class LibraryPage implements OnInit {
   selectedSong: Song = new Song();
 
   constructor(
+    private auth: AuthService,
     private helper: HelperService,
     private modalCtrl: ModalController,
     private nativeStorage: NativeStorage,
@@ -81,6 +83,10 @@ export class LibraryPage implements OnInit {
 
   filterSongsByReleaseDate(songs: Song[]): void {
     const currentDate = new Date();
+    // If it's a subscription user they only have access to songs since their signup date
+    if (this.auth.user.planType === 'subscription') {
+      songs = songs.filter(song => new Date(song.releaseDate) > new Date(this.auth.user.signUpDate));
+    }
     const filteredSongs = songs.filter(song => new Date(song.releaseDate) < currentDate);
     filteredSongs.forEach(song => {
       if (song.audioPath) {
@@ -104,6 +110,7 @@ export class LibraryPage implements OnInit {
         this.songsToDownload.push(song);
       }
     });
+    this.sortSongs();
     // this.songs = filteredSongs;
     // console.log(this.songs);
   }
@@ -150,5 +157,13 @@ export class LibraryPage implements OnInit {
     );
     console.log(allSongs);
     this.nativeStorage.setItem('songs', allSongs);
+  }
+
+  private sortSongs(): void {
+    this.normalSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+    this.instrumentalSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+    this.songsToDownload.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+    this.backgroundVocalsSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
+    this.otherSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
   }
 }

@@ -1,4 +1,8 @@
 <ion-content>
+  <div [ngClass]="{'no-overlay': hideOverlay}" id="pre-login">
+    <ion-button color="secondary" class="big-button not-first" (click)="closeOverlay()">I've already logged into the app</ion-button>
+    <ion-button color="secondary" class="big-button first" (click)="firstTimeLogin()">First time logging into the app</ion-button>
+  </div>
   <div id="img-background">
     <img id="logo" src="/assets/logos/ShortDashboardLogo.png">
   </div>
@@ -12,5 +16,7 @@
       <ion-input type="password" [(ngModel)]="password"></ion-input>
     </ion-item>
   </div>
-  <ion-button color="secondary" class="std-button" (click)="login()" [disabled]="!email || !password">Login</ion-button>
+  <ion-button color="secondary" class="std-button login-button" (click)="login()" [disabled]="!email || !password">Login</ion-button>
+  <ion-button class="std-button" color="primary" fill="clear" (click)="resetPassword()">Forgot Password?</ion-button>
+  <ion-button class="std-button" color="primary" fill="clear" (click)="firstTimeLogin()">First Time Login</ion-button>
 </ion-content>

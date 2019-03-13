@@ -19,6 +19,14 @@ export class AuthService {
     this.usersCollection = this.db.collection<User>('users');
   }
 
+  createUser(user: User, password: string): Promise<any> {
+    return this.auth.auth.createUserWithEmailAndPassword(user.email, password).then(token => {
+      console.log('auth token', token);
+      this.user = user;
+      console.log(this.auth.authState);
+    });
+  }
+
   getAllUsers(): Observable<User[]> {
     return this.usersCollection.valueChanges();
   }
@@ -53,12 +61,31 @@ export class AuthService {
     this.auth.auth.signOut();
   }
 
+  resetPassword(email: string): void {
+    this.auth.auth.sendPasswordResetEmail(email);
+  }
+
+  /** 
+   *     public email: string = '',
+    public firstName: string = '',
+    public lastName: string = '',
+    public planID: string = '',
+    public planName: string = '',
+    public planType: string = '',
+    public signUpDate: string = '',
+    public status: string = '',
+  */
   setUser(dbUser: User): void {
     if (dbUser) {
       this.user.email = dbUser.email;
-      this.user.name = dbUser.name;
+      this.user.firstName = dbUser.firstName;
+      this.user.lastName = dbUser.lastName;
+      this.user.planID = dbUser.planID;
+      this.user.planName = dbUser.planName;
+      this.user.planType = dbUser.planType;
+      this.user.signUpDate = dbUser.signUpDate;
+      this.user.status = dbUser.status;
       // this.user.uid = dbUser.uid;
-      this.user.subscriptionType = dbUser.subscriptionType;
     }
   }
 }
