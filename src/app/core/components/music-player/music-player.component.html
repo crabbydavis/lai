@@ -1,20 +1,29 @@
 
 <section>
-    <div class="top">
-        <ion-icon class="close-icon" name="close-circle-outline" tappable (click)="dismiss()"></ion-icon>
-      </div>
-  <div class="song-img">
-    <img [src]="activeSong.imageUrl">
+  <div class="top">
+    <ion-icon class="close-icon" name="close-circle-outline" tappable (click)="dismiss()"></ion-icon>
   </div>
+  <ion-slides (ionSlideDidChange)="changeSong()" (ionSlideDrag)="dragSlide()">
+    <ion-slide *ngFor="let song of songs">
+      <div class="song-img">
+        <!-- <img src="https://firebasestorage.googleapis.com/v0/b/live-all-in-17081.appspot.com/o/images%2FDashboardLogo.png?alt=media&token=7042173a-3365-445a-aca1-7f7b7c784067"> -->
+        <img [src]="song.imageUrl">
+        <!-- <object [data]="song.imageUrl" type="image/svg+xml"></object>
+        <object [data]="song.imagePath" type="image/svg+xml"></object>
+        <div class="song-image" style.background="url({{song.imageUrl}})"></div> -->
+        <!-- <svg [xmlns]="song.imageUrl"></svg> -->
+      </div>
+    </ion-slide>
+  </ion-slides>
 
   <ion-grid>
     <ion-row class="music-controls" justify-content-center align-items-center>
-      <ion-col>
+      <ion-col size="4">
         <ion-button (click)="rewind()">
           <ion-icon slot="icon-only" name="rewind"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col class="main-buttons">
+      <ion-col size="4" class="main-buttons">
         <ion-button *ngIf="!songPlaying" (click)="playSong()">
           <ion-icon slot="icon-only" name="play" ></ion-icon>
         </ion-button>
@@ -22,7 +31,7 @@
           <ion-icon slot="icon-only" name="pause"></ion-icon>
         </ion-button>
       </ion-col>
-      <ion-col>
+      <ion-col size="4">
         <ion-button (click)="fastForward()">
           <ion-icon slot="icon-only" name="fastforward"></ion-icon>
         </ion-button>

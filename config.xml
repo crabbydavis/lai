@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.liveallintoday" version="0.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.liveallintoday" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Live All In</name>
     <description>THE MONTHLY MUSICAL TOOLKIT THAT HELPS YOU LIVE DELIBERATELY.</description>
     <author email="davis@crabbinnovations.com" href="http://ionicframework.com/">Davis Crabb</author>
-    <content original-src="index.html" src="http://192.168.1.246:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -84,6 +84,7 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <plugin name="cordova-plugin-file" spec="6.0.1" />
     <allow-navigation href="http://192.168.1.246:8100" sessionid="db92e7bb" />
+    <preference name="SplashScreenDelay" value="3000" />
     <engine name="ios" spec="4.5.5" />
     <engine name="android" spec="8.0.0" />
 </widget>

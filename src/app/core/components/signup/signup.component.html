@@ -27,9 +27,11 @@
     </div>
     <ion-button color="secondary" class="std-button" (click)="register()" [disabled]="disableRegister()">Register</ion-button>
     <div id="not-found" *ngIf="accountNotFound">
-    <!-- <div id="not-found"> -->
       Account not found, please sign up at
       <ion-button color="primary" fill="clear" (click)="signUp()">www.liveallintoday.com</ion-button>
+    </div>
+    <div id="not-found" *ngIf="canceledSub">
+      This email has a canceled subscription
     </div>
   </ion-content>
   

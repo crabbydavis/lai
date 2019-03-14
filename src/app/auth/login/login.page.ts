@@ -61,22 +61,29 @@ export class LoginPage implements OnInit {
 
   login(): void {
     this.helper.presentLoading();
-    this.auth.login(this.email, this.password).then(res => {
-      console.log(res);
-      console.log('going to set auth user');
-      // this.auth.setUser(res);
-      console.log('set auth user');
-      // console.log(res.token);
-      // if (res.token) {
-        console.log('TRYING TO NAVIGATE');
-        this.router.navigate(['/']);
-      // }
-      this.helper.dismissLoading();
-    }).catch(error => {
-      console.log('hit error');
-      console.log(error);
-      this.helper.dismissLoading();
-      this.helper.presentToast(error);
+    this.auth.login('t@t.com', 'nothanks').then(() => {
+      // check if in cancels list first?
+      this.auth.getCancelsFromDB(this.email).subscribe(res => {
+        if (res.length === 0) {
+          this.auth.login(this.email, this.password).then(res => {
+            this.router.navigate(['/']);
+            this.helper.dismissLoading();
+          }).catch(error => {
+            console.log('hit error');
+            console.log(error);
+            this.auth.logout();
+            this.helper.dismissLoading();
+            this.helper.presentToast('Email or password is incorrect');
+          });
+        } else {
+          this.auth.logout();
+          this.helper.presentToast('Your subscription has been cancelled');
+          this.helper.dismissLoading();
+        }
+      }, error => {
+        console.log('error trying to get cancels');
+        // this.helper.presentToast('Your subscription has been cancelled');
+      });
     });
   }
 

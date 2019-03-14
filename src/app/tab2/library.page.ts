@@ -15,7 +15,7 @@ import { MusicPlayerComponent } from '../core/components/music-player/music-play
 })
 export class LibraryPage implements OnInit {
 
-  allSongs: Song[];
+  allSongs: Song[] = [];
 
   normalSongs: Song[] = [];
   instrumentalSongs: Song[] = [];
@@ -36,48 +36,34 @@ export class LibraryPage implements OnInit {
 
   ngOnInit() {
     this.getSongsFromDB();
-    // this.getSongsFromFirebase();
-
-
-    // const currentDate = new Date();
-    // this.nativeStorage.getItem('dateLastFetched').then(res => {
-    //   const dbDate = new Date(res);
-    //   if (dbDate < currentDate && dbDate.getMonth() !== currentDate.getMonth()) {
-    //     this.getSongsFromFirebase();
-    //   } else {
-    //     this.getSongsFromDB();
-    //   }
-    // });
   }
 
   downloadSong(song: Song, index: number): void {
     this.helper.presentLoading('Downloading Song');
-    this.songService.fileTransferDownload(song).then((entry) => {
-      // console.log('download complete: ' + entry.toURL());
-      song.audioPath = entry.toURL();
-      console.log('downloaded song');
-      console.log(song);
-      console.log('song type', song.songType);
-      switch (song.songType) {
-        case SongType.Normal:
-          this.normalSongs.push(song);
-          break;
-        case SongType.Instrumental:
-          this.instrumentalSongs.push(song);
-          break;
-        case SongType.BackgroundVocals:
-          this.backgroundVocalsSongs.push(song);
-          break;
-        case SongType.Other:
-          this.otherSongs.push(song);
-          break;
-        default:
-          alert('Invalid Song Type');
-      }
-      this.songsToDownload.splice(index, 1);
-      this.saveSongs();
-      // this.selectSong(song);
-      this.helper.dismissLoading();
+    this.songService.downloadSongAudio(song).then((audioEntry) => {
+      song.audioPath = audioEntry.toURL();
+      this.songService.downloadSongImage(song).then((imageEntry) => {
+        song.imagePath = imageEntry.toURL();
+        switch (song.songType) {
+          case SongType.Normal:
+            this.normalSongs.push(song);
+            break;
+          case SongType.Instrumental:
+            this.instrumentalSongs.push(song);
+            break;
+          case SongType.BackgroundVocals:
+            this.backgroundVocalsSongs.push(song);
+            break;
+          case SongType.Other:
+            this.otherSongs.push(song);
+            break;
+          default:
+            alert('Invalid Song Type');
+        }
+        this.songsToDownload.splice(index, 1);
+        this.saveSongs();
+        this.helper.dismissLoading();
+      });
     });
   }
 
@@ -86,6 +72,8 @@ export class LibraryPage implements OnInit {
     // If it's a subscription user they only have access to songs since their signup date
     if (this.auth.user.planType === 'subscription') {
       songs = songs.filter(song => new Date(song.releaseDate) > new Date(this.auth.user.signUpDate));
+    } else if (this.auth.user.planType === 'charge' && !this.auth.user.planName.includes('Early')) {
+      songs = songs.filter(song => new Date(song.releaseDate) > new Date('12/31/18'));
     }
     const filteredSongs = songs.filter(song => new Date(song.releaseDate) < currentDate);
     filteredSongs.forEach(song => {
@@ -111,33 +99,29 @@ export class LibraryPage implements OnInit {
       }
     });
     this.sortSongs();
-    // this.songs = filteredSongs;
-    // console.log(this.songs);
   }
 
   getSongsFromDB(): void {
     this.nativeStorage.getItem('songs').then(dbSongs => {
-      console.log('got songs from db');
-      console.log(dbSongs);
-      this.filterSongsByReleaseDate(dbSongs);
+      this.allSongs = dbSongs;
+      this.getSongsFromFirebase();
     }).catch(() => {
       this.getSongsFromFirebase();
     });
   }
 
   getSongsFromFirebase(): void {
+    console.log('get songs');
     const songSub = this.songService.getSongs().subscribe(apiSongs => {
       console.log(apiSongs);
-      this.filterSongsByReleaseDate(apiSongs);
-      this.nativeStorage.setItem('songs', apiSongs);
-      // this.nativeStorage.setItem('dateLastFetched', new Date().toISOString());
+      this.addNewSongs(apiSongs);
+      console.log(this.allSongs);
+      this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
       songSub.unsubscribe();
     });
   }
 
   async selectSong(songs: Song[], selectedIndex: number) {
-    // this.songService.activeSong = song;
-    console.log('trying to create modal');
     const modal = await this.modalCtrl.create({
       component: MusicPlayerComponent,
       componentProps: {
@@ -151,11 +135,31 @@ export class LibraryPage implements OnInit {
     return await modal.present();
   }
 
+  private addNewSongs(apiSongs: Song[]): void {
+    let addedSong = false;
+    apiSongs.forEach(apiSong => {
+      let foundSong = false;
+      for (let i = 0; i < this.allSongs.length; i++) {
+        const song = this.allSongs[i];
+        if (apiSong.title === song.title) {
+          foundSong = true;
+          break;
+        }
+      }
+      if (!foundSong) {
+        addedSong = true;
+        this.allSongs.push(apiSong);
+      }
+    });
+    if (addedSong) {
+      this.nativeStorage.setItem('songs', this.allSongs);
+    }
+  }
+
   private saveSongs(): void {
     const allSongs = this.normalSongs.concat(
       this.instrumentalSongs.concat(this.backgroundVocalsSongs.concat(this.otherSongs.concat(this.songsToDownload)))
     );
-    console.log(allSongs);
     this.nativeStorage.setItem('songs', allSongs);
   }
 

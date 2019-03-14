@@ -40,6 +40,11 @@ export class AuthService {
     return this.auth.authState;
   }
 
+  getCancelsFromDB(userEmail: string): Observable<User[]> {
+    const userQuery = this.db.collection<User>('cancels', ref => ref.where('email', '==', userEmail)).valueChanges();
+    return userQuery;
+  }
+
   getUserFromDB(userEmail: string): Observable<User[]> {
     const userQuery = this.db.collection<User>('users', ref => ref.where('email', '==', userEmail)).valueChanges();
     return userQuery;

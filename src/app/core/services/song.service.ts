@@ -35,7 +35,7 @@ export class SongService {
     return this.songsCollection.valueChanges();
   }
 
-  fileTransferDownload(song: Song): Promise<any> {
+  downloadSongAudio(song: Song): Promise<any> {
     let fileName = song.title.replace(/[^A-Za-z]/g, '');
     fileName += '.mp3';
     console.log(fileName);
@@ -43,6 +43,16 @@ export class SongService {
     // const url = `https://firebasestorage.googleapis.com/v0/b/live-all-in-test.appspot.com/o/audio%2FBe%20Where%20You%20Are.mp3?alt=media&token=819e99ea-0a22-4d56-9f05-c51257d53fae`;
     // this.soundPath = entry.toURL();
     return fileTransfer.download(song.audioUrl, this.file.dataDirectory + fileName);
+  }
+
+  downloadSongImage(song: Song): Promise<any> {
+    let fileName = song.title.replace(/[^A-Za-z]/g, '');
+    fileName += '.svg';
+    console.log(fileName);
+    const fileTransfer: FileTransferObject = this.transfer.create();
+    // const url = `https://firebasestorage.googleapis.com/v0/b/live-all-in-test.appspot.com/o/audio%2FBe%20Where%20You%20Are.mp3?alt=media&token=819e99ea-0a22-4d56-9f05-c51257d53fae`;
+    // this.soundPath = entry.toURL();
+    return fileTransfer.download(song.imageUrl, this.file.dataDirectory + fileName);
   }
 
   // Not using right now but should figure out since file transfer plugin is deprecated

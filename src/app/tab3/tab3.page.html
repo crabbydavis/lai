@@ -20,7 +20,9 @@
       <div slot="start">Subscription:</div>
       <div slot="end" [ngSwitch]="auth.user.planType">
         <span *ngSwitchCase="'subscription'">Monthly</span>
-        <span *ngSwitchCase="'charge'">Annual</span>
+        <span *ngSwitchCase="'charge'">
+          <span *ngIf="auth.user.planName.includes('Early')">Early Bird </span>Annual
+        </span>
       </div>
     </ion-item>
   </ion-list>
