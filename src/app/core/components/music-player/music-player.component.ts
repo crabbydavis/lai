@@ -49,35 +49,44 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.activeSong = this.songs[this.activeIndex];
+    this.loadAudio();
   }
 
   ngAfterViewInit() {
     this.slides.slideTo(this.activeIndex);
-    if  (this.activeIndex === 0) {
-      this.playSong();
-    }
+    // if  (this.activeIndex === 0) {
+    //   this.playSong();
+    // }
   }
 
   changeSong(): void {
     console.log('change song');
     if (!this.reachedEndOfSong) {
       console.log('changing song in changeSong');
-      if  (this.musicPlayer) {
-        this.musicPlayer.stop();
-        this.musicPlayer.release();
-        this.slides.getActiveIndex().then(index => {
-          this.activeIndex = index;
-          this.activeSong = this.songs[index];
-          console.log(this.activeSong);
-          this.playSong(true);
-        });
-      } else {
-        this.slides.getActiveIndex().then(index => {
-          this.activeSong = this.songs[index];
-          console.log(this.activeSong);
-          this.playSong();
-        });
-      }
+      this.allMusicPlayers[this.activeIndex].pause();
+      this.allMusicPlayers[this.activeIndex].seekTo(0);
+      this.slides.getActiveIndex().then(index => {
+        this.activeIndex = index;
+        this.activeSong = this.songs[index];
+        console.log(this.activeSong);
+        this.allMusicPlayers[this.activeIndex].play({ playAudioWhenScreenIsLocked : true });
+      });
+      // if  (this.musicPlayer) {
+      //   this.musicPlayer.stop();
+      //   this.musicPlayer.release();
+      //   this.slides.getActiveIndex().then(index => {
+      //     this.activeIndex = index;
+      //     this.activeSong = this.songs[index];
+      //     console.log(this.activeSong);
+      //     this.playSong(true);
+      //   });
+      // } else {
+      //   this.slides.getActiveIndex().then(index => {
+      //     this.activeSong = this.songs[index];
+      //     console.log(this.activeSong);
+      //     this.playSong();
+      //   });
+      // }
     } else {
       this.reachedEndOfSong = false;
     }
@@ -235,23 +244,69 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private playNextSong(): void {
-    if (!this.didDragSlide) {
-      console.log('changing song in music player on success');
-      this.reachedEndOfSong = true;
-      // this.musicPlayer.stop();
-      // this.musicPlayer.release();
-      if (!this.inDismiss) {
-        this.activeIndex += 1;
-        if (this.activeIndex >= this.songs.length) {
-          this.activeIndex = 0;
-        }
-        this.activeSong = this.songs[this.activeIndex];
-        this.slides.slideTo(this.activeIndex);
-        // this.cdr.detectChanges();
-        this.playSong(true);
+  loadAudio(): void {
+    console.log('in load audio');
+    this.songs.forEach(song => {
+      let mediaPlayer: MediaObject;
+
+      let mediaUrl = song.audioPath;
+      if (this.platform.is('ios')) {
+        mediaUrl = '../Library/NoCloud/' + mediaUrl.split('/').pop();
       }
-    }
-    this.didDragSlide = false;
+
+      mediaPlayer = this.media.create(mediaUrl);
+
+      mediaPlayer.onStatusUpdate.subscribe((status: number) => {
+        console.log(status);
+        if (status === MediaStatus.Stopped) {
+          console.log('*** media stopped ***');
+          if (!this.didDragSlide) {
+            console.log('changing song in music player on success');
+            this.reachedEndOfSong = true;
+            if (!this.inDismiss) {
+              this.activeIndex += 1;
+              if (this.activeIndex >= this.songs.length) {
+                this.activeIndex = 0;
+              }
+              this.activeSong = this.songs[this.activeIndex];
+              this.slides.slideTo(this.activeIndex);
+              // this.playSong(true);
+              this.allMusicPlayers[this.activeIndex].play({ playAudioWhenScreenIsLocked : true });
+            }
+          }
+          this.didDragSlide = false;
+        }
+        if (status === MediaStatus.Running) {
+          console.log('$$$ media started $$$');
+        }
+      }); // fires when file status changes
+
+      mediaPlayer.onError.subscribe(error => console.log('Error!' + JSON.stringify(error)));
+
+      mediaPlayer.play({ playAudioWhenScreenIsLocked : true }); // param specified for ios , numberOfLoops: 2
+      mediaPlayer.pause();
+      this.allMusicPlayers.push(mediaPlayer);
+    });
+    this.allMusicPlayers[this.activeIndex].play({ playAudioWhenScreenIsLocked : true });
   }
+
+  // private playNextSong(): void {
+  //   if (!this.didDragSlide) {
+  //     console.log('changing song in music player on success');
+  //     this.reachedEndOfSong = true;
+  //     // this.musicPlayer.stop();
+  //     // this.musicPlayer.release();
+  //     if (!this.inDismiss) {
+  //       this.activeIndex += 1;
+  //       if (this.activeIndex >= this.songs.length) {
+  //         this.activeIndex = 0;
+  //       }
+  //       this.activeSong = this.songs[this.activeIndex];
+  //       this.slides.slideTo(this.activeIndex);
+  //       // this.cdr.detectChanges();
+  //       this.playSong(true);
+  //     }
+  //   }
+  //   this.didDragSlide = false;
+  // }
 }
