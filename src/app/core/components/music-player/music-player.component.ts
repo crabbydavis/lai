@@ -28,6 +28,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
   songPlaying = false;
   songUrl: any;
   inDismiss = false;
+  inBackground = false;
   forceStop = false;
   didDragSlide = false;
   reachedEndOfSong = false;
@@ -49,14 +50,42 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.activeSong = this.songs[this.activeIndex];
-    this.loadAudio();
+    const pauseSub = this.platform.pause.subscribe(() => {
+      console.log('paused');
+      this.inBackground = true;
+      this.musicPlayer.getCurrentPosition().then(position => {
+        console.log('current position:' + position);
+        console.log('duration' + this.musicPlayer.getDuration());
+        const timeLeft = this.musicPlayer.getDuration() - position;
+        console.log('time left: ' + timeLeft);
+        setTimeout(() => {
+          // this.musicPlayer.stop();
+          // this.musicPlayer.release();
+          if (!this.inDismiss) {
+            this.activeIndex += 1;
+            if (this.activeIndex >= this.songs.length) {
+              this.activeIndex = 0;
+            }
+            this.activeSong = this.songs[this.activeIndex];
+            this.slides.slideTo(this.activeIndex);
+            // this.cdr.detectChanges();
+            console.log('trying to play song');
+            this.playSong(true);
+          }
+        }, (timeLeft - 1) * 1000);
+      });
+    });
+    const resumeSub = this.platform.resume.subscribe(() => {
+
+    });
+    // this.loadAudio();
   }
 
   ngAfterViewInit() {
     this.slides.slideTo(this.activeIndex);
-    // if  (this.activeIndex === 0) {
-    //   this.playSong();
-    // }
+    if  (this.activeIndex === 0) {
+      this.playSong();
+    }
   }
 
   changeSong(): void {
@@ -182,7 +211,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         console.log(status);
         if (status === MediaStatus.Stopped) {
           console.log('*** media stopped ***');
-          if (!this.didDragSlide) {
+          if (!this.didDragSlide && !this.inBackground) {
             console.log('changing song in music player on success');
             this.reachedEndOfSong = true;
             // this.musicPlayer.stop();
@@ -207,8 +236,23 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
       this.musicPlayer.onSuccess.subscribe(() => {
         console.log('Action is successful');
-        console.log(this.didDragSlide);
-
+        // if (!this.didDragSlide) {
+        //   console.log('changing song in music player on success');
+        //   this.reachedEndOfSong = true;
+        //   this.musicPlayer.stop();
+        //   this.musicPlayer.release();
+        //   if (!this.inDismiss) {
+        //     this.activeIndex += 1;
+        //     if (this.activeIndex >= this.songs.length) {
+        //       this.activeIndex = 0;
+        //     }
+        //     this.activeSong = this.songs[this.activeIndex];
+        //     this.slides.slideTo(this.activeIndex);
+        //     // this.cdr.detectChanges();
+        //     console.log('trying to play song');
+        //     this.playSong(true);
+        //   }
+        // }
         // if (!this.didDragSlide) {
         //   this.slides.isEnd().then(isEnd => {
         //     if (isEnd) {
@@ -256,6 +300,10 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
       mediaPlayer = this.media.create(mediaUrl);
 
+      mediaPlayer.play({ playAudioWhenScreenIsLocked : true }); // param specified for ios , numberOfLoops: 2
+      mediaPlayer.pause();
+      this.allMusicPlayers.push(mediaPlayer);
+
       mediaPlayer.onStatusUpdate.subscribe((status: number) => {
         console.log(status);
         if (status === MediaStatus.Stopped) {
@@ -282,12 +330,8 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
       }); // fires when file status changes
 
       mediaPlayer.onError.subscribe(error => console.log('Error!' + JSON.stringify(error)));
-
-      mediaPlayer.play({ playAudioWhenScreenIsLocked : true }); // param specified for ios , numberOfLoops: 2
-      mediaPlayer.pause();
-      this.allMusicPlayers.push(mediaPlayer);
     });
-    this.allMusicPlayers[this.activeIndex].play({ playAudioWhenScreenIsLocked : true });
+    // this.allMusicPlayers[this.activeIndex].play({ playAudioWhenScreenIsLocked : true });
   }
 
   // private playNextSong(): void {
