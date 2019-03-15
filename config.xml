@@ -3,7 +3,7 @@
     <name>Live All In</name>
     <description>THE MONTHLY MUSICAL TOOLKIT THAT HELPS YOU LIVE DELIBERATELY.</description>
     <author email="davis@crabbinnovations.com" href="http://ionicframework.com/">Davis Crabb</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.1.246:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -20,6 +20,9 @@
     <preference name="FadeSplashScreen" value="false" />
     <preference name="AutoHideSplashScreen" value="false" />
     <platform name="android">
+        <config-file parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+        </config-file>
         <allow-intent href="market:*" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
@@ -41,6 +44,11 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
+        <config-file parent="UIBackgroundModes" target="*-Info.plist">
+            <array>
+                <string>audio</string>
+            </array>
+        </config-file>
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
@@ -85,6 +93,7 @@
     <plugin name="cordova-plugin-file" spec="6.0.1" />
     <allow-navigation href="http://192.168.1.246:8100" sessionid="db92e7bb" />
     <preference name="SplashScreenDelay" value="3000" />
+    <plugin name="cordova-plugin-playlist" spec="0.8.1" />
     <engine name="ios" spec="4.5.5" />
     <engine name="android" spec="8.0.0" />
 </widget>

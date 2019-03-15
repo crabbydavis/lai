@@ -1,3 +1,4 @@
+import { AudioService } from './../../services/audio.service';
 import { Song } from './../../models/song.model';
 import { AuthService } from '../../services/auth.service';
 import { SongService } from '../../services/song.service';
@@ -19,7 +20,7 @@ enum MediaStatus {
   templateUrl: './music-player.component.html',
   styleUrls: ['./music-player.component.scss']
 })
-export class MusicPlayerComponent implements OnInit, AfterViewInit {
+export class MusicPlayerComponent implements OnInit {//, AfterViewInit {
   @Input() songs: Song[];
   @Input() activeIndex: number;
   @ViewChild(IonSlides) slides: IonSlides;
@@ -44,19 +45,45 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     private media: Media,
     private modalCtrl: ModalController,
     private platform: Platform,
-    public songService: SongService
+    public songService: SongService,
+    private cdvAudioPlayer: AudioService
   ) { }
 
   ngOnInit() {
-    this.activeSong = this.songs[this.activeIndex];
+    // this.activeSong = this.songs[this.activeIndex];
+
+    this.cdvAudioPlayer.setOptions({ verbose: true, resetStreamOnPause: true })
+     .then(() => {
+       console.log('get playlist');
+       const playlist = [];
+       this.songs.forEach(song => {
+        let mediaUrl = song.audioPath;
+        if (this.platform.is('ios')) {
+          mediaUrl = '../Library/NoCloud/' + mediaUrl.split('/').pop();
+        }
+        playlist.push({ trackId: '12345', assetUrl: mediaUrl, albumArt: song.imageUrl, artist: 'Hilary Weeks', album: 'Test Files', title: song.title });
+       });
+       console.log('playlist:', playlist);
+       this.cdvAudioPlayer.setPlaylistItems(playlist)
+       .then(() => {
+         this.cdvAudioPlayer.play();
+       }).catch((err) => console.log('YourService, cdvAudioPlayer setPlaylistItems error: ', err));
+     }).catch((err) => console.log('YourService, cdvAudioPlayer init error: ', err));
+
+   this.cdvAudioPlayer.setOptions({ verbose: true, resetStreamOnPause: true });
+   this.cdvAudioPlayer.setVolume(0.5);
+
+   this.cdvAudioPlayer.onStatus.subscribe((status) => {
+     console.log('YourService: Got RmxAudioPlayer onStatus: ', status);
+   });
   }
 
-  ngAfterViewInit() {
-    this.slides.slideTo(this.activeIndex);
-    if  (this.activeIndex === 0) {
-      this.playSong();
-    }
-  }
+  // ngAfterViewInit() {
+  //   this.slides.slideTo(this.activeIndex);
+  //   if  (this.activeIndex === 0) {
+  //     this.playSong();
+  //   }
+  // }
 
   changeSong(): void {
     console.log('change song');
