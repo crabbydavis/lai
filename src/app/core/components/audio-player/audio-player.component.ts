@@ -1,6 +1,6 @@
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { HelperService } from './../../services/helper.service';
-// import { AudioService } from './../../services/audio.service';
+import { AudioService } from './../../services/audio.service';
 import { Song } from './../../models/song.model';
 import { SongService } from '../../services/song.service';
 import { Component, OnInit, Input, ChangeDetectorRef, AfterViewInit, ViewChild } from '@angular/core';
@@ -25,7 +25,7 @@ export class AudioPlayerComponent implements OnInit {
   @Input() activeIndex: number;
   @ViewChild(IonSlides) slides: IonSlides;
 
-  cdvAudioPlayer: any;
+  // cdvAudioPlayer: any;
   startedPlaying = false;
   songPlaying = false;
   reachedEndOfSong = false;
@@ -42,7 +42,7 @@ export class AudioPlayerComponent implements OnInit {
     private nativeStorage: NativeStorage,
     private platform: Platform,
     public songService: SongService,
-    // private cdvAudioPlayer: AudioService
+    private cdvAudioPlayer: AudioService
   ) { }
 
   ngOnInit() {
@@ -89,7 +89,7 @@ export class AudioPlayerComponent implements OnInit {
    this.cdvAudioPlayer.setLoop(true);
 
    this.cdvAudioPlayer.onStatus.subscribe((status: any) => {
-    //  console.log('YourService: Got RmxAudioPlayer onStatus: ', status);
+    console.log('YourService: Got RmxAudioPlayer onStatus: ', status);
     this.isLoading = false;
     if (!this.startedPlaying) {
       this.startedPlaying = true;

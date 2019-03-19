@@ -91,7 +91,8 @@
     <plugin name="cordova-plugin-file" spec="6.0.1" />
     <allow-navigation href="http://192.168.1.246:8100" sessionid="db92e7bb" />
     <preference name="SplashScreenDelay" value="3000" />
-    <engine name="ios" spec="4.5.5" />
-    <engine name="android" spec="latest" />
     <plugin name="cordova-plugin-device" spec="2.0.2" />
+    <plugin name="cordova-plugin-playlist" spec="0.8.1" />
+    <engine name="ios" spec="4.5.5" />
+    <engine name="android" spec="8.0.0" />
 </widget>
