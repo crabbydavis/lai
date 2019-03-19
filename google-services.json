@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "339207702994",
+    "firebase_url": "https://live-all-in-17081.firebaseio.com",
+    "project_id": "live-all-in-17081",
+    "storage_bucket": "live-all-in-17081.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339207702994:android:b85d39bd21627670",
+        "android_client_info": {
+          "package_name": "com.liveallintoday"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339207702994-l8v0puci2vt6pfrqire2v4ndqi9k114n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxB2pfUc6Drm43m67ZAMglORZ_CLzYMPY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

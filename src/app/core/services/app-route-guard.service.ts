@@ -9,9 +9,8 @@ export class RouteGuardService implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    console.log('in route guard');
     return this.auth.isAuthenticated().pipe(map(user  => {
-      if (user === null || user === undefined) {
+      if (user === null || user === undefined || user.isAnonymous) {
         this.router.navigate(['/login'], {
           queryParams: {
             return: state.url

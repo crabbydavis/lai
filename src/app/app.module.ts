@@ -12,6 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 // Cordova Plugins
+import { Device } from '@ionic-native/device/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { Media } from '@ionic-native/media/ngx';
 import { MusicControls } from '@ionic-native/music-controls/ngx';
@@ -32,12 +33,12 @@ import { environment } from './../environments/environment';
 // Components
 import { MusicPlayerComponent } from './core/components/music-player/music-player.component';
 import { SignupComponent } from './core/components/signup/signup.component';
-// import { environment } from './../environments/environment.prod';
+import { AudioPlayerComponent } from './core/components/audio-player/audio-player.component';
 
 
 @NgModule({
-  declarations: [AppComponent, MusicPlayerComponent, SignupComponent],
-  entryComponents: [MusicPlayerComponent, SignupComponent],
+  declarations: [AppComponent, MusicPlayerComponent, SignupComponent, AudioPlayerComponent],
+  entryComponents: [MusicPlayerComponent, SignupComponent, AudioPlayerComponent],
   imports: [
     AngularFireAuthModule,
     AngularFireModule.initializeApp(environment.firebase),
@@ -48,6 +49,7 @@ import { SignupComponent } from './core/components/signup/signup.component';
     IonicModule.forRoot(),
     AppRoutingModule],
   providers: [
+    Device,
     File,
     FileTransfer,
     InAppBrowser,

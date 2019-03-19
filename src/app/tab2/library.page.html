@@ -15,10 +15,17 @@
         </ion-label>
       </ion-item-divider>
       <ion-radio-group [(ngModel)]="selectedSong">
-        <ion-item *ngFor="let song of normalSongs; let index = index" (click)="selectSong(normalSongs, index)">
-          <ion-label>{{ song.title }}</ion-label>
-          <ion-radio slot="start" [value]="song"></ion-radio>
-        </ion-item>
+        <ion-item-sliding *ngFor="let song of normalSongs; let index = index">
+          <ion-item (click)="selectSong(normalSongs, index)">
+            <ion-label>{{ song.title }}</ion-label>
+            <ion-radio slot="start" [value]="song"></ion-radio>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="removeSong(normalSongs, index)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
       </ion-radio-group>
       <!-- Instrumental Songs -->
       <ion-item-divider *ngIf="instrumentalSongs.length > 0">
@@ -26,12 +33,18 @@
           Instrumental
         </ion-label>
       </ion-item-divider>
-      <!-- <div class="subheader" *ngIf="instrumentalSongs.length > 0">Instrumental</div> -->
       <ion-radio-group [(ngModel)]="selectedSong">
-        <ion-item *ngFor="let song of instrumentalSongs; let index = index" (click)="selectSong(instrumentalSongs, index)">
-          <ion-label>{{ song.title }}</ion-label>
-          <ion-radio slot="start" [value]="song"></ion-radio>
-        </ion-item>
+        <ion-item-sliding *ngFor="let song of instrumentalSongs; let index = index">
+          <ion-item (click)="selectSong(instrumentalSongs, index)">
+            <ion-label>{{ song.title }}</ion-label>
+            <ion-radio slot="start" [value]="song"></ion-radio>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="removeSong(instrumentalSongs, index)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
       </ion-radio-group>
       <!-- Instrumental with Background Vocals -->
       <ion-item-divider *ngIf="backgroundVocalsSongs.length > 0">
@@ -39,11 +52,18 @@
           Instrumental with Background Vocals
         </ion-label>
       </ion-item-divider>
-      <ion-radio-group [(ngModel)]="backgroundVocalsSongs">
-        <ion-item *ngFor="let song of backgroundVocalsSongs; let index = index" (click)="selectSong(backgroundVocalsSongs, index)">
-          <ion-label>{{ song.title }}</ion-label>
-          <ion-radio slot="start" [value]="song"></ion-radio>
-        </ion-item>
+      <ion-radio-group [(ngModel)]="selectedSong">
+        <ion-item-sliding *ngFor="let song of backgroundVocalsSongs; let index = index">
+          <ion-item (click)="selectSong(backgroundVocalsSongs, index)">
+            <ion-label>{{ song.title }}</ion-label>
+            <ion-radio slot="start" [value]="song"></ion-radio>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="removeSong(backgroundVocalsSongs, index)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
       </ion-radio-group>
       <!-- Other -->
       <ion-item-divider *ngIf="otherSongs.length > 0">
@@ -52,10 +72,17 @@
         </ion-label>
       </ion-item-divider>
       <ion-radio-group [(ngModel)]="selectedSong">
-        <ion-item *ngFor="let song of otherSongs; let index = index" (click)="selectSong(otherSongs, index)">
-          <ion-label>{{ song.title }}</ion-label>
-          <ion-radio slot="start" [value]="song"></ion-radio>
-        </ion-item>
+        <ion-item-sliding *ngFor="let song of otherSongs; let index = index">
+          <ion-item (click)="selectSong(otherSongs, index)">
+            <ion-label>{{ song.title }}</ion-label>
+            <ion-radio slot="start" [value]="song"></ion-radio>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="removeSong(otherSongs, index)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
       </ion-radio-group>
     </section>
     <section *ngIf="songsToDownload.length > 0">

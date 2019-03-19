@@ -1,3 +1,4 @@
+import { AuthService } from './../core/services/auth.service';
 import { SongService } from '../core/services/song.service';
 import { Component, OnInit } from '@angular/core';
 

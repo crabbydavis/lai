@@ -7,6 +7,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 })
 export class HelperService {
 
+  isLoading = false;
   private loading: HTMLIonLoadingElement;
   private toast: HTMLIonToastElement;
 
@@ -30,6 +31,10 @@ export class HelperService {
     }
     const browser = this.iab.create(url, '_blank');
     browser.show();
+    browser.on('loaderror').subscribe(res => {
+      console.log('error inapp browser');
+      console.log('Error message ' + res.message);
+    });
   }
 
   async presentLoading(text?: string) {
@@ -38,9 +43,7 @@ export class HelperService {
     });
     await this.loading.present();
 
-    const { role, data } = await this.loading.onDidDismiss();
-
-    console.log('Loading dismissed!');
+    // const { role, data } = await this.loading.onDidDismiss();
   }
 
   async presentToast(msg?: string) {

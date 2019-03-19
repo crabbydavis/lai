@@ -1,3 +1,4 @@
+import { AudioPlayerComponent } from './../core/components/audio-player/audio-player.component';
 import { AuthService } from './../core/services/auth.service';
 import { SongType } from './../core/models/song.model';
 import { HelperService } from './../core/services/helper.service';
@@ -5,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
 import { SongService } from '../core/services/song.service';
 import { Song } from '../core/models/song.model';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { MusicPlayerComponent } from '../core/components/music-player/music-player.component';
 
 @Component({
@@ -30,6 +31,7 @@ export class LibraryPage implements OnInit {
     private helper: HelperService,
     private modalCtrl: ModalController,
     private nativeStorage: NativeStorage,
+    private platform: Platform,
     public songService: SongService
     ) {
   }
@@ -42,20 +44,25 @@ export class LibraryPage implements OnInit {
     this.helper.presentLoading('Downloading Song');
     this.songService.downloadSongAudio(song).then((audioEntry) => {
       song.audioPath = audioEntry.toURL();
+      // Not using downloaded image right but can since people will have it
       this.songService.downloadSongImage(song).then((imageEntry) => {
         song.imagePath = imageEntry.toURL();
         switch (song.songType) {
           case SongType.Normal:
             this.normalSongs.push(song);
+            this.normalSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
             break;
           case SongType.Instrumental:
             this.instrumentalSongs.push(song);
+            this.instrumentalSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
             break;
           case SongType.BackgroundVocals:
             this.backgroundVocalsSongs.push(song);
+            this.backgroundVocalsSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
             break;
           case SongType.Other:
             this.otherSongs.push(song);
+            this.otherSongs.sort((a, b) => new Date(a.releaseDate).getTime() - new Date(b.releaseDate).getTime());
             break;
           default:
             alert('Invalid Song Type');
@@ -63,7 +70,13 @@ export class LibraryPage implements OnInit {
         this.songsToDownload.splice(index, 1);
         this.saveSongs();
         this.helper.dismissLoading();
+      }).catch(error => {
+        alert(error);
+        this.helper.dismissLoading();
       });
+    }).catch(error => {
+      alert(error);
+      this.helper.dismissLoading();
     });
   }
 
@@ -71,7 +84,10 @@ export class LibraryPage implements OnInit {
     const currentDate = new Date();
     // If it's a subscription user they only have access to songs since their signup date
     if (this.auth.user.planType === 'subscription') {
+      const songsInMonth = songs.filter(song => new Date(song.releaseDate).getMonth() === new Date(this.auth.user.signUpDate).getMonth()
+        && new Date(song.releaseDate).getFullYear() === new Date(this.auth.user.signUpDate).getFullYear());
       songs = songs.filter(song => new Date(song.releaseDate) > new Date(this.auth.user.signUpDate));
+      songs = songs.concat(songsInMonth);
     } else if (this.auth.user.planType === 'charge' && !this.auth.user.planName.includes('Early')) {
       songs = songs.filter(song => new Date(song.releaseDate) > new Date('12/31/18'));
     }
@@ -111,28 +127,44 @@ export class LibraryPage implements OnInit {
   }
 
   getSongsFromFirebase(): void {
-    console.log('get songs');
     const songSub = this.songService.getSongs().subscribe(apiSongs => {
-      console.log(apiSongs);
       this.addNewSongs(apiSongs);
-      console.log(this.allSongs);
       this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
       songSub.unsubscribe();
     });
   }
 
+  removeSong(songList: Song[], index: number): void {
+    songList.splice(index, 1);
+    this.saveSongs();
+  }
+
   async selectSong(songs: Song[], selectedIndex: number) {
-    const modal = await this.modalCtrl.create({
-      component: MusicPlayerComponent,
-      componentProps: {
-        'songs': songs,
-        'activeIndex': selectedIndex
-      }
-    });
-    modal.onDidDismiss().then(() => {
-      this.selectedSong = new Song();
-    });
-    return await modal.present();
+    if (this.platform.is('ios')) {
+      const modal = await this.modalCtrl.create({
+        component: AudioPlayerComponent,
+        componentProps: {
+          'songs': songs,
+          'activeIndex': selectedIndex
+        }
+      });
+      modal.onDidDismiss().then(() => {
+        this.selectedSong = new Song();
+      });
+      return await modal.present();
+    } else if (this.platform.is('android')) {
+      const modal = await this.modalCtrl.create({
+        component: MusicPlayerComponent,
+        componentProps: {
+          'songs': songs,
+          'activeIndex': selectedIndex
+        }
+      });
+      modal.onDidDismiss().then(() => {
+        this.selectedSong = new Song();
+      });
+      return await modal.present();
+    }
   }
 
   private addNewSongs(apiSongs: Song[]): void {

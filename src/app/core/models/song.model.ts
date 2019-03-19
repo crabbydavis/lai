@@ -6,6 +6,7 @@ export class Song {
     imageUrl = '';
     imagePath = '';
     songType: number;
+    isLoading = true;
 }
 
 export enum SongType {

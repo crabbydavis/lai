@@ -8,8 +8,7 @@ export class User {
     public planType: string = '',
     public signUpDate: string = '',
     public status: string = '',
-    // public type: UserType = null,
-    // public uid: string = ''
+    public devices: string[] = []
   ) {}
 }
 

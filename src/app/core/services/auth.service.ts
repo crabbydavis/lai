@@ -21,10 +21,14 @@ export class AuthService {
 
   createUser(user: User, password: string): Promise<any> {
     return this.auth.auth.createUserWithEmailAndPassword(user.email, password).then(token => {
-      console.log('auth token', token);
       this.user = user;
-      console.log(this.auth.authState);
     });
+  }
+
+  deleteUser(): Promise<any> {
+    if (this.auth.auth.currentUser.isAnonymous) {
+      return this.auth.auth.currentUser.delete();
+    }
   }
 
   getAllUsers(): Observable<User[]> {
@@ -33,6 +37,11 @@ export class AuthService {
 
   getUser(firebaseUser: firebase.User): Observable<any> {
     const userRef = this.db.collection('users').doc(firebaseUser.email);
+    return userRef.get();
+  }
+
+  getUserByEmail(email: string): Observable<any> {
+    const userRef = this.db.collection('users').doc(email);
     return userRef.get();
   }
 
@@ -51,15 +60,11 @@ export class AuthService {
   }
 
   login(email: string, password: string): Promise<any> {
-    return this.auth.auth.signInWithEmailAndPassword(email, password).then(token => {
-      console.log('token: ' + JSON.stringify(token));
-      // const userQuery = this.db.collection<User>('users', ref => ref.where('email', '==', token.user.email)).valueChanges();
-      // userQuery
-      // .subscribe(docs => {
-      //   this.user = docs[0];
-      //   console.log('user: ' + JSON.stringify(this.user));
-      // });
-    });
+    return this.auth.auth.signInWithEmailAndPassword(email, password);
+  }
+
+  loginAnonymously(): Promise<any> {
+    return this.auth.auth.signInAnonymously();
   }
 
   logout(): void {
@@ -70,16 +75,6 @@ export class AuthService {
     this.auth.auth.sendPasswordResetEmail(email);
   }
 
-  /** 
-   *     public email: string = '',
-    public firstName: string = '',
-    public lastName: string = '',
-    public planID: string = '',
-    public planName: string = '',
-    public planType: string = '',
-    public signUpDate: string = '',
-    public status: string = '',
-  */
   setUser(dbUser: User): void {
     if (dbUser) {
       this.user.email = dbUser.email;
@@ -90,7 +85,15 @@ export class AuthService {
       this.user.planType = dbUser.planType;
       this.user.signUpDate = dbUser.signUpDate;
       this.user.status = dbUser.status;
-      // this.user.uid = dbUser.uid;
+      if (dbUser.devices) {
+        this.user.devices = dbUser.devices;
+      }
     }
+  }
+
+  updateUser(user: User): Promise<any> {
+    return this.usersCollection.doc(user.email).set({
+      ...user
+    }, { merge: true });
   }
 }

@@ -1,0 +1,43 @@
+<section>
+    <div class="top">
+      <ion-icon class="close-icon" name="close-circle-outline" tappable (click)="dismiss()"></ion-icon>
+    </div>
+    <ion-slides (ionSlideDidChange)="changeSong()">
+      <ion-slide *ngFor="let song of songs">
+        <div class="song-img">
+          <img [src]="song.imageUrl">
+        </div>
+      </ion-slide>
+    </ion-slides>
+
+    <ion-grid>
+      <ion-row *ngIf="isLoading">
+        <ion-col>
+          <ion-spinner [class.hide]="isLoading"></ion-spinner>
+        </ion-col>
+      </ion-row>
+      <ion-row class="music-controls" justify-content-center align-items-center>
+        <ion-col size="4">
+          <ion-button (click)="rewind()">
+            <ion-icon slot="icon-only" name="rewind"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <ion-col size="4" class="main-buttons">
+          <ion-spinner *ngIf="isLoading"></ion-spinner>
+          <div *ngIf="!isLoading">
+            <ion-button *ngIf="!songPlaying" (click)="playSong()">
+              <ion-icon slot="icon-only" name="play" ></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="songPlaying" (click)="pauseSong()">
+              <ion-icon slot="icon-only" name="pause"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-col>
+        <ion-col size="4">
+          <ion-button (click)="fastForward()">
+            <ion-icon slot="icon-only" name="fastforward"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
