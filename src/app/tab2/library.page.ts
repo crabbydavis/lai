@@ -83,10 +83,13 @@ export class LibraryPage implements OnInit {
   filterSongsByReleaseDate(songs: Song[]): void {
     const currentDate = new Date();
     // If it's a subscription user they only have access to songs since their signup date
+    const arr = this.auth.user.signUpDate.split(/[- :]/);
+    const formattedDate = new Date(+arr[0], +arr[1]-1, +arr[2], +arr[3], +arr[4], +arr[5]);
+
     if (this.auth.user.planType === 'subscription') {
-      const songsInMonth = songs.filter(song => new Date(song.releaseDate).getMonth() === new Date(this.auth.user.signUpDate).getMonth()
-        && new Date(song.releaseDate).getFullYear() === new Date(this.auth.user.signUpDate).getFullYear());
-      songs = songs.filter(song => new Date(song.releaseDate) > new Date(this.auth.user.signUpDate));
+      const songsInMonth = songs.filter(song => new Date(song.releaseDate).getMonth() === formattedDate.getMonth()
+        && new Date(song.releaseDate).getFullYear() === formattedDate.getFullYear());
+      songs = songs.filter(song => new Date(song.releaseDate) > formattedDate);
       songs = songs.concat(songsInMonth);
     } else if (this.auth.user.planType === 'charge' && !this.auth.user.planName.includes('Early')) {
       songs = songs.filter(song => new Date(song.releaseDate) > new Date('12/31/18'));
@@ -129,6 +132,10 @@ export class LibraryPage implements OnInit {
   getSongsFromFirebase(): void {
     const songSub = this.songService.getSongs().subscribe(apiSongs => {
       this.addNewSongs(apiSongs);
+      this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
+      songSub.unsubscribe();
+    }, error => {
+      alert(error);
       this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
       songSub.unsubscribe();
     });
