@@ -69,7 +69,7 @@ export class SignupComponent implements OnInit, OnDestroy {
                 this.createdUser = true;
                 this.authService.user = user;
                 user.devices = [];
-                const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.uuid;
+                const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.manufacturer + '-' + this.device.uuid;
                 user.devices.push(newDevice);
                 this.authService.updateUser(user).then(() => {
                   console.log('User Updated');

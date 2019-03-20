@@ -6,8 +6,9 @@ import { Component, OnInit } from '@angular/core';
 import { SongService } from '../core/services/song.service';
 import { Song } from '../core/models/song.model';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { ModalController, Platform } from '@ionic/angular';
+import { ModalController, Platform, NavController } from '@ionic/angular';
 import { MusicPlayerComponent } from '../core/components/music-player/music-player.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tab2',
@@ -31,7 +32,9 @@ export class LibraryPage implements OnInit {
     private helper: HelperService,
     private modalCtrl: ModalController,
     private nativeStorage: NativeStorage,
+    private navCtrl: NavController,
     private platform: Platform,
+    private router: Router,
     public songService: SongService
     ) {
   }
@@ -81,6 +84,10 @@ export class LibraryPage implements OnInit {
   }
 
   filterSongsByReleaseDate(songs: Song[]): void {
+    if (!this.auth.user.planType) {
+      this.logout();
+    }
+
     const currentDate = new Date();
     // If it's a subscription user they only have access to songs since their signup date
     const arr = this.auth.user.signUpDate.split(/[- :]/);
@@ -94,6 +101,7 @@ export class LibraryPage implements OnInit {
     } else if (this.auth.user.planType === 'charge' && !this.auth.user.planName.includes('Early')) {
       songs = songs.filter(song => new Date(song.releaseDate) > new Date('12/31/18'));
     }
+
     const filteredSongs = songs.filter(song => new Date(song.releaseDate) < currentDate);
     filteredSongs.forEach(song => {
       if (song.audioPath) {
@@ -193,6 +201,11 @@ export class LibraryPage implements OnInit {
     if (addedSong) {
       this.nativeStorage.setItem('songs', this.allSongs);
     }
+  }
+
+  private logout(): void {
+    this.auth.logout();
+    this.navCtrl.navigateRoot('/login');
   }
 
   private saveSongs(): void {

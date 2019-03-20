@@ -47,6 +47,7 @@ export class AudioPlayerComponent implements OnInit {
 
   ngOnInit() {
     this.nativeStorage.setItem('donePlaying', false);
+    this.nativeStorage.setItem('markDonePlaying', false);
 
     this.platform.resume.subscribe(() => {
       this.nativeStorage.getItem('donePlaying').then(res => {
@@ -54,6 +55,10 @@ export class AudioPlayerComponent implements OnInit {
           this.dismiss();
         }
       });
+    });
+
+    this.platform.pause.subscribe(() => {
+      this.nativeStorage.setItem('markDonePlaying', true);
     });
 
     this.helper.presentLoading();
@@ -103,7 +108,13 @@ export class AudioPlayerComponent implements OnInit {
        }
      }
      if (status.trackId === undefined || status.trackId === 'INVALID') {
-      this.nativeStorage.setItem('donePlaying', true);
+      this.nativeStorage.getItem('markDonePlaying').then(res => {
+        if (res) {
+          this.nativeStorage.setItem('donePlaying', true);
+        }
+      }).catch(err => {
+        console.log('not set yet');
+      });
       // if (this.startedPlaying) {
       //   this.cdvAudioPlayer.playTrackByIndex(0);
       //   this.activeIndex = 0;
@@ -113,6 +124,8 @@ export class AudioPlayerComponent implements OnInit {
       //   this.slides.slideTo(0);
       // }
      }
+   }, error => {
+     console.log(error);
    });
   }
 

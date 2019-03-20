@@ -65,18 +65,14 @@ export class LoginPage implements OnInit {
   }
 
   login(): void {
-    console.log('enter login');
     this.helper.presentLoading();
     // this.auth.login('t@t.com', 'nothanks').then(() => {
     this.auth.loginAnonymously().then(() => {
-      console.log('signed in anonymously');
       // check if in cancels list first?
       this.auth.getCancelsFromDB(this.email).subscribe(res => {
         if (res.length === 0) {
           this.auth.getUserByEmail(this.email).subscribe(doc => {
             const user: User = doc.data();
-            console.log('user');
-            console.log(user);
             if (user === undefined || user === null) {
               this.auth.deleteUser();
               this.auth.logout();
@@ -93,8 +89,7 @@ export class LoginPage implements OnInit {
                 this.auth.logout();
                 this.helper.dismissLoading();
               } else {
-                user.devices = [];
-                const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.uuid;
+                const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.manufacturer + '-' + this.device.uuid;
                 if (!user.devices.includes(newDevice)) {
                   user.devices.push(newDevice);
                   this.auth.updateUser(user).then(() => {
@@ -103,7 +98,6 @@ export class LoginPage implements OnInit {
                     console.log('user not updated', error);
                   });
                 }
-                console.log('trying to login');
                 // delete the anonymous user
                 this.auth.deleteUser().then(() => {
                   this.auth.login(this.email, this.password).then(token => {
