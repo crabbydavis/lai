@@ -28,6 +28,7 @@ export class SignupComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log('ngOnInit');
   }
 
   ngOnDestroy() {
@@ -58,48 +59,72 @@ export class SignupComponent implements OnInit, OnDestroy {
     this.helper.presentLoading();
     // this.authService.login('t@t.com', 'nothanks').then(() => {
     this.authService.loginAnonymously().then(() => {
+      console.log('logged in anonymously');
       // check if in cancels list first?
-      this.authService.getCancelsFromDB(this.email).subscribe(res => {
+      const cancelObserver = this.authService.getCancelsFromDB(this.email).subscribe(res => {
+        cancelObserver.unsubscribe();
         if (res.length === 0) {
-          this.authService.getUserFromDB(this.email).subscribe(res => {
-            // console.log('found user', res);
+          const userObserver = this.authService.getUserFromDB(this.email).subscribe(res => {
+            userObserver.unsubscribe();
+            console.log('found user', res);
             const user: User = res[0];
             if (res.length > 0) {
-              this.authService.createUser(user, this.password).then(() => {
-                this.createdUser = true;
-                this.authService.user = user;
-                user.devices = [];
-                const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.manufacturer + '-' + this.device.uuid;
-                user.devices.push(newDevice);
-                this.authService.updateUser(user).then(() => {
-                  console.log('User Updated');
+              console.log(user);
+              console.log(this.password);
+              // delete the anonymous user
+              this.authService.deleteUser().then(() => {
+                this.authService.createUser(user, this.password).then(() => {
+                  console.log('user created');
+                  console.log(user);
+                  this.createdUser = true;
+                  this.authService.user = user;
+                  user.devices = [];
+                  const newDevice = this.device.platform + '-' + this.device.model + '-' + this.device.manufacturer + '-' + this.device.uuid;
+                  user.devices.push(newDevice);
+                  this.authService.updateUser(user).then(() => {
+                    console.log('User Updated', user);
+                  }).catch(error => {
+                    console.log('user not updated', error);
+                  });
+                  this.modalCtrl.dismiss();
                 }).catch(error => {
-                  console.log('user not updated', error);
+                  console.log(error);
+                  console.log('user never got created...');
+                  console.log('&&&& deleting user: 85 &&&&&');
+                  if (this.authService.isAnonymous()) {
+                    this.authService.deleteUser();
+                    this.authService.logout();
+                  }
                 });
-                this.modalCtrl.dismiss();
               }).catch(error => {
-                this.authService.deleteUser();
-                this.authService.logout();
+                console.log(error);
               });
             } else {
-              this.authService.deleteUser();
-              this.authService.logout();
+              console.log('&&&& deleting user: 89 &&&&&');
+              if (this.authService.isAnonymous()) {
+                this.authService.deleteUser();
+                this.authService.logout();
+              }
               this.accountNotFound = true;
             }
             this.helper.dismissLoading();
           }, error => {
             console.log('got error', error);
-            this.authService.deleteUser();
-            this.authService.logout();
+            console.log('&&&& deleting user: 97 &&&&&');
+            if (this.authService.isAnonymous()) {
+              this.authService.deleteUser();
+              this.authService.logout();
+            }
             this.helper.dismissLoading();
           });
         } else {
           this.canceledSub = true;
+          console.log('&&&& deleting user &&&&&');
           this.authService.deleteUser();
           this.authService.logout();
           this.helper.dismissLoading();
         }
-      });
+      }, error => console.log(error));
     }).catch(error => {
       console.log(error);
     });

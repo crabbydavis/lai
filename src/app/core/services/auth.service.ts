@@ -13,20 +13,18 @@ export class AuthService {
   usersCollection: AngularFirestoreCollection<User>;
 
   constructor(
-    private auth: AngularFireAuth,
+    public auth: AngularFireAuth,
     private db: AngularFirestore
   ) {
     this.usersCollection = this.db.collection<User>('users');
   }
 
   createUser(user: User, password: string): Promise<any> {
-    return this.auth.auth.createUserWithEmailAndPassword(user.email, password).then(token => {
-      this.user = user;
-    });
+    return this.auth.auth.createUserWithEmailAndPassword(user.email, password);
   }
 
   deleteUser(): Promise<any> {
-    if (this.auth.auth.currentUser.isAnonymous) {
+    if (this.auth.auth.currentUser && this.auth.auth.currentUser.isAnonymous) {
       return this.auth.auth.currentUser.delete();
     }
   }
@@ -36,6 +34,7 @@ export class AuthService {
   }
 
   getUser(firebaseUser: firebase.User): Observable<any> {
+    console.log(firebaseUser.email);
     const userRef = this.db.collection('users').doc(firebaseUser.email);
     return userRef.get();
   }
@@ -43,6 +42,15 @@ export class AuthService {
   getUserByEmail(email: string): Observable<any> {
     const userRef = this.db.collection('users').doc(email);
     return userRef.get();
+  }
+
+  isAnonymous(): boolean {
+    console.log('isAnonymous', this.auth.auth.currentUser.isAnonymous);
+    if (this.auth.auth.currentUser.isAnonymous) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   isAuthenticated(): Observable<firebase.User> {

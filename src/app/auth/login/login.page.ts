@@ -35,13 +35,15 @@ export class LoginPage implements OnInit {
 
   ngOnInit() {
     this.platform.ready().then(() => {
-      console.log('enter login');
       this.nativeStorage.getItem('showedOverlay').then(res => {
         if (res) {
           this.hideOverlay = true;
           setTimeout(() => {
             this.splashScreen.hide();
           }, 5000);
+        } else {
+          this.hideOverlay = false;
+          this.nativeStorage.setItem('showedOverlay', true);
         }
       }).catch(error => {
         this.hideOverlay = false;
@@ -67,11 +69,14 @@ export class LoginPage implements OnInit {
   login(): void {
     this.helper.presentLoading();
     // this.auth.login('t@t.com', 'nothanks').then(() => {
-    this.auth.loginAnonymously().then(() => {
+    this.auth.loginAnonymously().then((res) => {
+      console.log('logged in anonymously', res);
       // check if in cancels list first?
-      this.auth.getCancelsFromDB(this.email).subscribe(res => {
+      const cancelObserver = this.auth.getCancelsFromDB(this.email).subscribe(res => {
+        cancelObserver.unsubscribe();
         if (res.length === 0) {
-          this.auth.getUserByEmail(this.email).subscribe(doc => {
+          const userObserver = this.auth.getUserByEmail(this.email).subscribe(doc => {
+            userObserver.unsubscribe();
             const user: User = doc.data();
             if (user === undefined || user === null) {
               this.auth.deleteUser();
@@ -100,17 +105,20 @@ export class LoginPage implements OnInit {
                 }
                 // delete the anonymous user
                 this.auth.deleteUser().then(() => {
+                  console.log('logging in with email and password');
                   this.auth.login(this.email, this.password).then(token => {
-                    console.log(res);
+                    console.log(token);
                     this.router.navigate(['/']);
                     this.helper.dismissLoading();
                   }).catch(error => {
                     console.log('hit error');
                     console.log(error);
-                    this.auth.deleteUser();
-                    this.auth.logout();
-                    this.helper.dismissLoading();
-                    this.helper.presentToast('Email or password is incorrect');
+                    if (this.auth.isAnonymous()) {
+                      this.auth.deleteUser();
+                      this.auth.logout();
+                      this.helper.dismissLoading();
+                      this.helper.presentToast('Email or password is incorrect');
+                    }
                   });
                 }).catch(error => {
                   console.log(error);
@@ -119,17 +127,21 @@ export class LoginPage implements OnInit {
             }
           }, error => console.error(JSON.stringify(error)));
         } else {
-          this.auth.deleteUser();
-          this.auth.logout();
-          this.helper.presentToast('Your subscription has been cancelled');
-          this.helper.dismissLoading();
+          if (this.auth.isAnonymous()) {
+            this.auth.deleteUser();
+            this.auth.logout();
+            this.helper.presentToast('Your subscription has been cancelled');
+            this.helper.dismissLoading();
+          }
         }
       }, error => {
-        console.log('error trying to get cancels');
-        this.auth.deleteUser();
-        this.auth.logout();
-        this.helper.dismissLoading();
-        this.helper.presentToast('Email or password is incorrect');
+        console.log('error trying to get cancels', error);
+        if (this.auth.isAnonymous()) {
+          this.auth.deleteUser();
+          this.auth.logout();
+          this.helper.dismissLoading();
+          this.helper.presentToast('Email or password is incorrect');
+        }
         // this.helper.presentToast('Your subscription has been cancelled');
       });
     }).catch(error => {
