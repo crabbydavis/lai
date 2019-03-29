@@ -3,7 +3,7 @@ import { HelperService } from './../../services/helper.service';
 import { AudioService } from './../../services/audio.service';
 import { Song } from './../../models/song.model';
 import { SongService } from '../../services/song.service';
-import { Component, OnInit, Input, ChangeDetectorRef, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { File } from '@ionic-native/file/ngx';
 import { Platform, ModalController, IonSlides } from '@ionic/angular';
 
@@ -25,7 +25,7 @@ export class AudioPlayerComponent implements OnInit {
   @Input() activeIndex: number;
   @ViewChild(IonSlides) slides: IonSlides;
 
-  // cdvAudioPlayer: any;
+  // cdvAudioPlayer: any; // uncomment for Android
   startedPlaying = false;
   songPlaying = false;
   reachedEndOfSong = false;
@@ -35,7 +35,6 @@ export class AudioPlayerComponent implements OnInit {
   private readonly skipLength = 30;
 
   constructor(
-    private cdr: ChangeDetectorRef,
     private file: File,
     private helper: HelperService,
     private modalCtrl: ModalController,
@@ -86,8 +85,14 @@ export class AudioPlayerComponent implements OnInit {
         this.slides.slideTo(this.activeIndex);
         this.songPlaying = true;
         this.helper.dismissLoading();
-      }).catch((err) => console.log('YourService, cdvAudioPlayer setPlaylistItems error: ', err));
-    }).catch((err) => console.log('YourService, cdvAudioPlayer init error: ', err));
+      }).catch((err) => {
+        this.helper.dismissLoading();
+        console.log('YourService, cdvAudioPlayer setPlaylistItems error: ', err);
+      });
+    }).catch((err) => {
+      this.helper.dismissLoading();
+      console.log('YourService, cdvAudioPlayer init error: ', err);
+    });
 
    this.cdvAudioPlayer.setOptions({ verbose: false, resetStreamOnPause: true });
    this.cdvAudioPlayer.setVolume(0.5);
