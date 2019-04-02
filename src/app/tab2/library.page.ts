@@ -43,6 +43,15 @@ export class LibraryPage implements OnInit {
     this.getSongsFromDB();
   }
 
+  doRefresh(event): void {
+    this.normalSongs = [];
+    this.instrumentalSongs = [];
+    this.backgroundVocalsSongs = [];
+    this.otherSongs = [];
+    this.songsToDownload = [];
+    this.getSongsFromFirebase(event);
+  }
+
   downloadSong(song: Song, index: number): void {
     this.helper.presentLoading('Downloading Song');
     this.songService.downloadSongAudio(song).then((audioEntry) => {
@@ -74,31 +83,37 @@ export class LibraryPage implements OnInit {
         this.saveSongs();
         this.helper.dismissLoading();
       }).catch(error => {
-        alert(error);
+        alert(JSON.stringify(error));
         this.helper.dismissLoading();
       });
     }).catch(error => {
-      alert(error);
+      alert(JSON.stringify(error));
       this.helper.dismissLoading();
     });
   }
 
-  filterSongsByReleaseDate(songs: Song[]): void {
+  filterSongsByReleaseDate(songs: Song[], refreshEvent?): void {
     if (!this.auth.user.planType) {
       this.logout();
     }
 
     const currentDate = new Date();
     // If it's a subscription user they only have access to songs since their signup date
-    const arr = this.auth.user.signUpDate.split(/[- :]/);
-    const formattedDate = new Date(+arr[0], +arr[1]-1, +arr[2], +arr[3], +arr[4], +arr[5]);
-
-    if (this.auth.user.planType === 'subscription') {
+    let formattedDate: Date;
+    if  (this.auth.user.signUpDate.includes('UTC')) {
+      const arr = this.auth.user.signUpDate.split(/[- :]/);
+      formattedDate = new Date(+arr[0], +arr[1]-1, +arr[2], +arr[3], +arr[4], +arr[5]);
+    } else {
+      formattedDate = new Date(this.auth.user.signUpDate);
+    }
+    console.log(formattedDate);
+    // subscription is for MemberSpace and month is for Memberful
+    if (this.auth.user.planType === 'subscription' || this.auth.user.planType === 'month') {
       const songsInMonth = songs.filter(song => new Date(song.releaseDate).getMonth() === formattedDate.getMonth()
         && new Date(song.releaseDate).getFullYear() === formattedDate.getFullYear());
       songs = songs.filter(song => new Date(song.releaseDate) > formattedDate);
       songs = songs.concat(songsInMonth);
-    } else if (this.auth.user.planType === 'charge' && !this.auth.user.planName.includes('Early')) {
+    } else if ((this.auth.user.planType === 'charge' || this.auth.user.planType === 'year') && !this.auth.user.planName.includes('Early')) {
       songs = songs.filter(song => new Date(song.releaseDate) > new Date('12/31/18'));
     }
 
@@ -126,6 +141,9 @@ export class LibraryPage implements OnInit {
       }
     });
     this.sortSongs();
+    if (refreshEvent) {
+      refreshEvent.target.complete();
+    }
   }
 
   getSongsFromDB(): void {
@@ -137,14 +155,22 @@ export class LibraryPage implements OnInit {
     });
   }
 
-  getSongsFromFirebase(): void {
+  getSongsFromFirebase(refreshEvent?): void {
     const songSub = this.songService.getSongs().subscribe(apiSongs => {
       this.addNewSongs(apiSongs);
-      this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
+      if (refreshEvent) {
+        this.filterSongsByReleaseDate(this.allSongs, refreshEvent); // All Songs may just be dbSongs
+      } else {
+        this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
+      }
       songSub.unsubscribe();
     }, error => {
       alert(error);
-      this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
+      if (refreshEvent) {
+        this.filterSongsByReleaseDate(this.allSongs, refreshEvent); // All Songs may just be dbSongs
+      } else {
+        this.filterSongsByReleaseDate(this.allSongs); // All Songs may just be dbSongs
+      }
       songSub.unsubscribe();
     });
   }

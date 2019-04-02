@@ -15,5 +15,6 @@ export class Tab1Page implements OnInit {
   }
 
   ngOnInit() {
+    console.log('Logged into app');
   }
 }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { User } from '../models/user.model';
+// import { NativeStorage } from '@ionic-native/native-storage/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,8 @@ export class AuthService {
 
   constructor(
     public auth: AngularFireAuth,
-    private db: AngularFirestore
+    private db: AngularFirestore,
+    // private nativeStorage: NativeStorage
   ) {
     this.usersCollection = this.db.collection<User>('users');
   }
@@ -98,6 +100,11 @@ export class AuthService {
       }
     }
   }
+
+  //https://firebase.google.com/docs/reference/rest/auth/#section-verify-custom-token
+  // saveToken(token: any): void {
+  //   this.nativeStorage.setItem('token', token);
+  // }
 
   updateUser(user: User): Promise<any> {
     return this.usersCollection.doc(user.email).set({

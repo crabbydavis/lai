@@ -9,15 +9,3 @@ export const environment = {
     messagingSenderId: '339207702994'
   }
 };
-
-// export const environment = {
-//   production: true,
-//   firebase: {
-//     apiKey: 'AIzaSyC1XNSQohIz3h37XNDdhHF9_ZK34XuQmfQ',
-//     authDomain: 'live-all-in-test.firebaseapp.com',
-//     databaseURL: 'https://live-all-in-test.firebaseio.com',
-//     projectId: 'live-all-in-test',
-//     storageBucket: 'live-all-in-test.appspot.com',
-//     messagingSenderId: '347164057433'
-//   }
-// };

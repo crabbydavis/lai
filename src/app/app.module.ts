@@ -42,7 +42,7 @@ import { AudioPlayerComponent } from './core/components/audio-player/audio-playe
   imports: [
     AngularFireAuthModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule.enablePersistence(),
+    AngularFirestoreModule,
     AngularFireStorageModule,
     BrowserModule,
     FormsModule,
