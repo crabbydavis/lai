@@ -18,12 +18,17 @@
     </ion-item>
     <ion-item lines="none">
       <div slot="start">Subscription:</div>
-      <div slot="end" [ngSwitch]="auth.user.planType">
+      <div slot="end">{{ auth.user.planName }}</div>
+      <!-- <div slot="end" [ngSwitch]="auth.user.planType">
         <span *ngSwitchCase="'subscription'">Monthly</span>
+        <span *ngSwitchCase="'month'">Monthly</span>
         <span *ngSwitchCase="'charge'">
           <span *ngIf="auth.user.planName.includes('Early')">Early Bird </span>Annual
         </span>
-      </div>
+        <span *ngSwitchCase="'year'">
+          <span *ngIf="auth.user.planName.includes('Early')">Early Bird </span>Annual
+        </span>
+      </div> -->
     </ion-item>
   </ion-list>
   <ion-button id="logout-button" color="secondary" (click)="logout()">Logout</ion-button>
